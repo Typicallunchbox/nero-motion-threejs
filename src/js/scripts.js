@@ -7,10 +7,9 @@ import { MotionPathPlugin } from 'gsap/MotionPathPlugin.js';
 import { isEqual } from 'lodash';
 import Stats from 'three/examples/jsm/libs/stats.module'
 import * as TWEEN from '@tweenjs/tween.js';
-import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
+// import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
 
-const hdrTextureURL = new URL('../img/hdri.hdr', import.meta.url)
-
+// const hdrTextureURL = new URL('../img/hdri.hdr', import.meta.url)
 const buildingURL = new URL('../assets/building.glb', import.meta.url);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -46,24 +45,21 @@ camera.position.set(235, 162, 370);
 camera.lookAt(11, 8, 49);
 // orbit.update();
 
+//WAS NOT PROVIDING MODEL WITH ANY LIGHTING
+//I BELIEVE THE CAUSE TO BE THE WAY MODEL WAS EXPORTED POSSIBLY
+//WOULD HAVE BEEN NICE AS HDRI WOULD GIVE REALISTIC LIGHTING TO SCENE
+
 // const loaderTexture = new RGBELoader();
 // loaderTexture.load(hdrTextureURL, function(texture){
 //   texture.mapping = THREE.EquirectangularReflectionMapping;
 //   scene.background = texture;
 // })
 
-// const spotLight = new THREE.SpotLight(0xffffff);
-// spotLight.position.set(-100, 400, 0);
-// spotLight.castShadow = true;
-// spotLight.angle = 1;
-// scene.add(spotLight);
-
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
 directionalLight.position.set(200, 250, -20);
 directionalLight.castShadow = true;
 directionalLight.shadow.bias = -0.003;
-
 
 directionalLight.shadow.camera.bottom = -3000;
 directionalLight.shadow.camera.top = 3000;
