@@ -319,6 +319,7 @@ const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
 const curveObject = new THREE.Line(geometry, material);
 scene.add(curveObject);
 
+
 //TO GET THE PROGRESS, take both endpoints and use them as a reference
 //On mouse event add the range divided by 10 to x, y and z coords
 // With these new coords we can move the camera positioning until we get to endpoint
