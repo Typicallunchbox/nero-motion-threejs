@@ -314,6 +314,7 @@ function animateCameraBackward() {
 }
 
 
+
 const points = curve.getPoints(50);
 const geometry = new THREE.BufferGeometry().setFromPoints(points);
 const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
