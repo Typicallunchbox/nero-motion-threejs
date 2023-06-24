@@ -42,11 +42,12 @@ scene.add(spotLight);
 
 // const sLightHelper = new THREE.SpotLightHelper(spotLight);
 // scene.add(sLightHelper);
-
+var model = null;
+var childMesh = null;
 const clock = new THREE.Clock();
 const assetLoader = new GLTFLoader();
 assetLoader.load(buildingURL.href, function (gltf) {
-  const model = gltf.scene;
+  model = gltf.scene;
   console.log('MODEL', model);
   model.scale = gltf.scene.scale.set(
     0.1 * gltf.scene.scale.x,
@@ -56,7 +57,7 @@ assetLoader.load(buildingURL.href, function (gltf) {
   model.position.set(0, 0, 0);
 
   //RED CONE
-  model.children[2].position.set(0, 0, 0).ge;
+  
 
   // model.children[4].position.set(0,2500,0)
   scene.add(model);
@@ -64,6 +65,35 @@ assetLoader.load(buildingURL.href, function (gltf) {
   const redCone = model.children[2].position;
   console.log('redCone:', redCone);
 });
+console.log('scene:', scene)
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(scene.children, true);
+
+  if (intersects.length > 0) {
+    if (intersects[0].object === childMesh) {
+      // Change color to a random color
+      childMesh.material.color.set(getRandomColor());
+    }
+  }
+}
+
+window.addEventListener('mousemove', onMouseMove);
+
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 //FOR DEBUGGING
 window.addEventListener('click', function () {
