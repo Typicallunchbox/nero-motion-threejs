@@ -312,7 +312,6 @@ function animateCameraBackward() {
     currentIndex = (currentIndex - 1) % interpolatedPoints.length; // Increment the index
   }
 }
-// TODO: Remove this comment
 
 
 const points = curve.getPoints(50);
