@@ -5,11 +5,20 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import gsap from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin.js';
 import { isEqual } from 'lodash';
+import Stats from 'three/examples/jsm/libs/stats.module'
+import * as TWEEN from '@tweenjs/tween.js';
+import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
+
+const hdrTextureURL = new URL('../img/hdri.hdr', import.meta.url)
 
 const buildingURL = new URL('../assets/building.glb', import.meta.url);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
+// renderer.outputEncoding = THREE.LinearEncoding;
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// renderer.physicallyCorrectLights = true;
+
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const interpolatedPoints = [];
@@ -20,6 +29,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   10000,
 );
+
 
 //CAMERA FREE MOVEMENT OPTIONS
 // const orbit = new OrbitControls(camera, renderer.domElement);
@@ -36,14 +46,39 @@ camera.position.set(235, 162, 370);
 camera.lookAt(11, 8, 49);
 // orbit.update();
 
-const spotLight = new THREE.SpotLight(0xffffff);
-spotLight.position.set(-100, 1000, 0);
-spotLight.castShadow = true;
-spotLight.angle = 0.2;
-scene.add(spotLight);
+// const loaderTexture = new RGBELoader();
+// loaderTexture.load(hdrTextureURL, function(texture){
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.background = texture;
+// })
 
-// const sLightHelper = new THREE.SpotLightHelper(spotLight);
-// scene.add(sLightHelper);
+// const spotLight = new THREE.SpotLight(0xffffff);
+// spotLight.position.set(-100, 400, 0);
+// spotLight.castShadow = true;
+// spotLight.angle = 1;
+// scene.add(spotLight);
+
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
+scene.add(directionalLight);
+directionalLight.position.set(200, 250, -20);
+directionalLight.castShadow = true;
+directionalLight.shadow.bias = -0.003;
+
+
+directionalLight.shadow.camera.bottom = -3000;
+directionalLight.shadow.camera.top = 3000;
+directionalLight.shadow.camera.left = -3000;
+directionalLight.shadow.camera.right = 3000;
+
+directionalLight.shadow.mapSize.width = 10240;
+directionalLight.shadow.mapSize.height = 10240;
+
+const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+scene.add(dLightHelper);
+
+const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(dLightShadowHelper);
+
 
 //VARIABLES
 var model = null;
@@ -63,6 +98,17 @@ assetLoader.load(buildingURL.href, function (gltf) {
     0.1 * gltf.scene.scale.z,
   );
   model.position.set(0, 0, 0);
+
+  model.traverse(function(node) {
+    if (node.isMesh) {
+      // Create and assign the MeshStandardMaterial
+      const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      // node.material = material;
+      node.receiveShadow = true;
+      node.castShadow = true;
+    }
+  });
+
   scene.add(model);
 });
 
@@ -74,18 +120,22 @@ const pointSets = [
   {
     startPoint: new THREE.Vector3(36.56, 12, 48.96),
     endPoint: new THREE.Vector3(-11, 8, 49),
+    step: 50
   },
   {
     startPoint: new THREE.Vector3(-11, 8, 49),
     endPoint: new THREE.Vector3(-18, 7.7, 49.86),
+    step: 50
   },
   {
     startPoint: new THREE.Vector3(-18, 7.7, 49.86),
     endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
+    step: 50
   },
   {
     startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
     endPoint: new THREE.Vector3(-30, 7.4, 59.8),
+    
   },
   // Add more sets as needed
 ];
@@ -101,6 +151,7 @@ function raycast(){
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children, true);
     if (intersects.length > 0) {
+      console.log('OBJECT:', intersects )
       if (intersects[0].object.name === 'Red_Cone') {
         // Change color to a random color
         const redCone = intersects[0].object;
@@ -203,14 +254,17 @@ function handleMouseWheel(event) {
   }
 }
 
+
 function handleCameraAngles(index, direction) {
   //CASES FOR CAMERA ANGLES
   console.log('Index:', index)
   const point = interpolatedPoints[index];
+  
   if(index >= 0 && index<= 25){
     camera.lookAt(-11, 8, 49);
   }else if(index >= 26 && index<= 60){
-    camera.lookAt(interpolatedPoints[currentIndex + 10]);
+    camera.lookAt(-30, 8, 51);
+    // camera.lookAt(interpolatedPoints[currentIndex + 1]);
 
     // camera.lookAt(-29, 8, 49);
   }else if(index >= 61 && index<= 90){
@@ -281,10 +335,15 @@ const curveObject = new THREE.Line(geometry, material);
 scene.add(curveObject);
 
 
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
+
 // Animate the scene
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  stats.update();
   // controls.update(clock.getDelta())
 }
 animate();
