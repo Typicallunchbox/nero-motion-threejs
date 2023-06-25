@@ -80,10 +80,8 @@ camera.lookAt(11, 8, 49);
 //LIGHTING VARIABLES
 //OUTSIDE LIGHTING
 const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.015);
-scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
-scene.add(directionalLight);
 directionalLight.position.set(200, 250, -20);
 directionalLight.castShadow = true;
 directionalLight.shadow.bias = -0.003;
@@ -97,10 +95,8 @@ directionalLight.shadow.mapSize.width = 10240;
 directionalLight.shadow.mapSize.height = 10240;
 
 const dLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-scene.add(dLightHelper);
 
 const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(dLightShadowHelper);
 
 //INTERNAL LIGHTS
 const directLight1 = new THREE.RectAreaLight(0xFFFFFF, 20, 2, 6);
@@ -148,27 +144,24 @@ const particleMaterial = new THREE.PointsMaterial({
 const particles = new THREE.Points(particleGeometry, particleMaterial);
 
 //ADDING ITEMS TO 3D SCENE
-scene.add(particles);
-scene.add(axesHelper);
-scene.add(directLight1, directLight2);
+//Add objects
+scene.add(ambientLight, directionalLight, directLight1, directLight2, particles);
+
+//Add helpers
+scene.add(axesHelper, dLightHelper, dLightShadowHelper);
 // scene.add( helper1, helper2 );
 
-
+//Load Model: Set scale and position
 assetLoader.load(buildingURL.href, function (gltf) {
   model = gltf.scene;
-  console.log('MODEL', model);
   model.scale = gltf.scene.scale.set(
     0.1 * gltf.scene.scale.x,
     0.1 * gltf.scene.scale.y,
     0.1 * gltf.scene.scale.z,
   );
   model.position.set(0, 0, 0);
-
   model.traverse(function(node) {
     if (node.isMesh) {
-      // Create and assign the MeshStandardMaterial
-      const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-      // node.material = material;
       node.receiveShadow = true;
       node.castShadow = true;
     }
@@ -183,8 +176,6 @@ assetLoader.load(buildingURL.href, function (gltf) {
   console.log(error)
 });
 
-
-
 function raycast(){
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
@@ -196,7 +187,6 @@ function raycast(){
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(scene.children, true);
     if (intersects.length > 0) {
-      console.log('OBJECT:', intersects )
       if (intersects[0].object.name === 'Red_Cone') {
         // Change color to a random color
         const redCone = intersects[0].object;
@@ -246,6 +236,18 @@ function touchMove(event) {
   }
 }
 
+function handleMouseWheel(event) {
+  var deltaY = event.deltaY;
+
+  if (deltaY > 0) {
+    // Scroll down (forward)
+    animateCameraForward();
+  } else {
+    // Scroll up (backward)
+    animateCameraBackward();
+  }
+}
+
 function interpolation(){
   // const numPoints = 20;
     for (const pointSet of pointSets) {
@@ -283,22 +285,8 @@ function getRandomColor() {
   return color;
 }
 
-function handleMouseWheel(event) {
-  var deltaY = event.deltaY;
-
-  if (deltaY > 0) {
-    // Scroll down (forward)
-    animateCameraForward();
-  } else {
-    // Scroll up (backward)
-    animateCameraBackward();
-  }
-}
-
-
 function handleCameraAngles(index, direction) {
   //CASES FOR CAMERA ANGLES
-  console.log('Index:', index)
   const point = interpolatedPoints[index];
   
   if(index >= 0 && index<= 25){
