@@ -5,7 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import gsap from 'gsap';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin.js';
 import { isEqual } from 'lodash';
-import Stats from 'three/examples/jsm/libs/stats.module'
+import Stats from 'three/examples/jsm/libs/stats.module';
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
 import * as TWEEN from '@tweenjs/tween.js';
 // import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader'
 
@@ -55,6 +56,11 @@ camera.lookAt(11, 8, 49);
 //   scene.background = texture;
 // })
 
+const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.015);
+scene.add(ambientLight);
+
+
+
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.8);
 scene.add(directionalLight);
 directionalLight.position.set(200, 250, -20);
@@ -74,6 +80,80 @@ scene.add(dLightHelper);
 
 const dLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
 scene.add(dLightShadowHelper);
+
+
+//IN HOUSE LIGHTS
+const directLight1 = new THREE.RectAreaLight(0xFFFFFF, 20, 2, 6);
+// scene.add(directLight1)
+directLight1.position.set(-29, 12, 49.7);
+directLight1.rotation.x = 0;
+directLight1.lookAt(-29, 0, 49.7);
+
+const directLight2 = new THREE.RectAreaLight(0xFFFFFF, 10, 6, 2);
+// scene.add(directLight1)
+directLight2.position.set(-26.5, 12, 67.5);
+directLight2.rotation.x = 0;
+directLight2.lookAt(-26.5, 0, 67.5);
+
+const helper1 = new RectAreaLightHelper( directLight1 );
+const helper2 = new RectAreaLightHelper( directLight2 );
+
+
+
+//PARTICLES
+// Create a buffer geometry for the particles
+const particleGeometry = new THREE.BufferGeometry();
+
+// Create arrays to hold the particle positions
+const positions = [];
+
+// Add random positions to the particle positions array
+const numParticles = 500;
+for (let i = 0; i < numParticles; i++) {
+  const x = Math.random() * 400 - 200; // Random x position (-100 to 100)
+  const y = Math.random() * 400 - 200; // Random y position (-100 to 100)
+  const z = Math.random() * 800 - 400; // Random z position (-100 to 100)
+
+  positions.push(x, y, z);
+}
+
+// Create a Float32Array from the particle positions array
+const positionsArray = new Float32Array(positions);
+
+// Set the positions as an attribute in the buffer geometry
+particleGeometry.setAttribute('position', new THREE.BufferAttribute(positionsArray, 3));
+
+// Create a material for the particles
+const particleMaterial = new THREE.PointsMaterial({
+  size: 1,                    // Size of the particles
+  color: 0xffffff,            // Color of the particles
+  transparent: true,
+  opacity: 0.5,               // Opacity of the particles
+  // map: new THREE.TextureLoader().load('path/to/your/particleTexture.png'), // Texture for the particles (optional)
+});
+
+// Create a particle system with the buffer geometry and material
+const particles = new THREE.Points(particleGeometry, particleMaterial);
+
+// Add the particle system to the scene
+scene.add(particles);
+
+// Set the light's target position
+// directLight1.target.position.copy(targetPosition);
+
+// Add the light to the scene
+scene.add(directLight1, directLight2);
+// scene.add( helper1, helper2 );
+
+
+// const dLightHelper1 = new THREE.PointLightHelper(directLight1, 1);
+// scene.add(dLightHelper1);
+
+// const dLightShadowHelper1 = new THREE.CameraHelper(directLight1.shadow.camera);
+// scene.add(dLightShadowHelper1);
+// directionalLight.shadow.bias = -0.003;
+
+
 
 
 //VARIABLES
@@ -106,6 +186,12 @@ assetLoader.load(buildingURL.href, function (gltf) {
   });
 
   scene.add(model);
+},
+(xhr) => {
+  console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+},
+(error) => {
+  console.log(error)
 });
 
 const pointSets = [
@@ -226,7 +312,7 @@ function interpolation(){
 }
 
 function plottingCubesToPath(){
-  const cubeGeometry = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+  const cubeGeometry = new THREE.BoxGeometry(0.01, 0.01, 0.01);
   const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   interpolatedPoints.forEach((point) => {
     const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
