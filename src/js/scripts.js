@@ -33,26 +33,27 @@ const pointSets = [
   {
     startPoint: new THREE.Vector3(235, 162, 370),
     endPoint: new THREE.Vector3(36.56, 12, 48.96),
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(36.56, 12, 48.96),
     endPoint: new THREE.Vector3(-11, 8, 49),
-    step: 50
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(-11, 8, 49),
     endPoint: new THREE.Vector3(-18, 7.7, 49.86),
-    step: 50
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(-18, 7.7, 49.86),
     endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
-    step: 50
+    interpolationType: 'bezier'
   },
   {
     startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
     endPoint: new THREE.Vector3(-30, 7.4, 59.8),
-    
+    interpolationType: 'linear'
   },
   // Add more sets as needed
 ];
@@ -148,7 +149,7 @@ const particles = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(ambientLight, directionalLight, directLight1, directLight2, particles);
 
 //Add helpers
-scene.add(axesHelper, dLightHelper, dLightShadowHelper);
+// scene.add(axesHelper, dLightHelper, dLightShadowHelper);
 // scene.add( helper1, helper2 );
 
 //Load Model: Set scale and position
@@ -251,7 +252,7 @@ function handleMouseWheel(event) {
 function interpolation(){
   // const numPoints = 20;
     for (const pointSet of pointSets) {
-      const { startPoint, endPoint, steps = 20, interpolationType = 'linear' } = pointSet;
+      const { startPoint, endPoint, steps = 20, interpolationType } = pointSet;
 
       if(interpolationType === 'linear'){
         for (let i = 1; i <= steps; i++) {
@@ -261,9 +262,65 @@ function interpolation(){
         }
       }
       else if(interpolationType === 'bezier'){
+        // Combine interpolated points for all sets
+          console.log('bezier')
+          const numPoints = 20;
+          // console.log('VALUES:', startPoint, endPoint, numPoints, pointSet);
+          // Generate interpolated points based on the interpolation type (linear or Bezier)
+          // const points = generateBezierInterpolationPoints(startPoint, endPoint, numPoints);
 
+          const curve = new THREE.CubicBezierCurve3(
+            startPoint,
+            new THREE.Vector3( -25, 7.7, 51.86 ),
+            new THREE.Vector3( -28.8, 7.7, 53.2 ),
+            endPoint
+          );
+
+          // startPoint: new THREE.Vector3(-18, 7.7, 49.86),
+          // endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
+          
+          const points = curve.getPoints( 50 );
+          const geometry = new THREE.BufferGeometry().setFromPoints( points );
+          
+          const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+          
+          // Create the final object to add to the scene
+          const curveObject = new THREE.Line( geometry, material );
+          scene.add(curveObject);
+
+
+          // console.log('points:', points)
+
+          interpolatedPoints.push(...points);
       }
     }
+    console.log('interpolatedFinal:', interpolatedPoints)
+}
+
+// Generate interpolated points for each set using Bezier interpolation
+function generateBezierInterpolationPoints(startPoint, endPoint, numPoints) {
+  // Define the control points for Bezier interpolation
+  const controlPoint1 = new THREE.Vector3(
+    startPoint.x + (endPoint.x - startPoint.x) / 3,
+    startPoint.y + (endPoint.y - startPoint.y) / 3,
+    startPoint.z + (endPoint.z - startPoint.z) / 3
+  );
+  const controlPoint2 = new THREE.Vector3(
+    startPoint.x + (endPoint.x - startPoint.x) * 2 / 3,
+    startPoint.y + (endPoint.y - startPoint.y) * 2 / 3,
+    startPoint.z + (endPoint.z - startPoint.z) * 2 / 3
+  );
+
+  console.log('INTER VALUES:', startPoint, controlPoint1, controlPoint2, endPoint)
+
+  // Create a cubic Bezier curve
+  const curve = new THREE.CubicBezierCurve3(startPoint, controlPoint1, controlPoint2, endPoint);
+
+  // Generate interpolated points along the curve
+  const interpolatedPoints = curve.getPoints(numPoints);
+  // console.log('interpolatedPoints:', interpolatedPoints)
+
+  return interpolatedPoints;
 }
 
 function plottingCubesToPath(){
@@ -300,9 +357,12 @@ function handleCameraAngles(index, direction) {
     camera.lookAt(interpolatedPoints[currentIndex + 10]);
 
       // camera.lookAt(interpolatedPoints[currentIndex + 1]);
-  }else if(index >= 81 && index<= 90){
+  }else if(index >= 81){
     camera.lookAt(interpolatedPoints[currentIndex + 1]);
   }
+  // else if(index >= 81 && index<= 90){
+  //   camera.lookAt(interpolatedPoints[currentIndex + 1]);
+  // }
 
   // if(index>= 26)
 }
