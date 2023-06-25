@@ -269,9 +269,22 @@ function interpolation(){
           // Generate interpolated points based on the interpolation type (linear or Bezier)
           // const points = generateBezierInterpolationPoints(startPoint, endPoint, numPoints);
 
+          //CHANGING Z DOES SIN WAVE ON Z_AXIS
+          //OPPOSITE VALUES CREATE SIGN WAVE ON Z AXIS
+          // new THREE.Vector3( -25, 7.7, startPoint.z + 5 ),
+          // new THREE.Vector3( -28.8, 7.7, endPoint.z - 5 ),
+
+          //ORIGNAL
+          // new THREE.Vector3( -25, 7.7, 51.86 ),
+          //   new THREE.Vector3( -28.8, 7.7, 53.2 ),
+
+          //CONSOLE LOG WHERE CONTROL POINTS ARE SITTING OR HAVE CONTROL POINTS AS DIFFERECT S
+
           const curve = new THREE.CubicBezierCurve3(
             startPoint,
-            new THREE.Vector3( -25, 7.7, 51.86 ),
+            // new THREE.Vector3( -25, 7.7, startPoint.z),
+            // new THREE.Vector3( -28.8, 7.7, endPoint.z - 1),
+            new THREE.Vector3( -27, 7.7, 51.86 ),
             new THREE.Vector3( -28.8, 7.7, 53.2 ),
             endPoint
           );
