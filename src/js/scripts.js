@@ -8,6 +8,7 @@ import { isEqual } from 'lodash';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
 import * as TWEEN from '@tweenjs/tween.js';
+import * as dat from 'dat.gui';
 
 
 //BASIC VARIABLES
@@ -33,26 +34,29 @@ const pointSets = [
   {
     startPoint: new THREE.Vector3(235, 162, 370),
     endPoint: new THREE.Vector3(36.56, 12, 48.96),
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(36.56, 12, 48.96),
     endPoint: new THREE.Vector3(-11, 8, 49),
-    step: 50
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(-11, 8, 49),
     endPoint: new THREE.Vector3(-18, 7.7, 49.86),
-    step: 50
+    interpolationType: 'linear'
   },
   {
     startPoint: new THREE.Vector3(-18, 7.7, 49.86),
-    endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
-    step: 50
+    endPoint: new THREE.Vector3(-30, 7.7, 55.2),
+    controlPoint1: new THREE.Vector3(-27, 7.7, 50.86),
+    controlPoint2: new THREE.Vector3(-28.8, 7.7, 53.2),
+    interpolationType: 'bezier'
   },
   {
-    startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
+    startPoint: new THREE.Vector3(-30, 7.7, 55.2),
     endPoint: new THREE.Vector3(-30, 7.4, 59.8),
-    
+    interpolationType: 'linear'
   },
   // Add more sets as needed
 ];
@@ -72,9 +76,9 @@ camera.lookAt(11, 8, 49);
 
 //DEBUGGING CAMERA FREE MOVEMENT VARIABLES
 // const orbit = new OrbitControls(camera, renderer.domElement);
-// const controls = new FirstPersonControls(camera, renderer.domElement);
-// controls.movementSpeed = 8;
-// controls.lookSpeed = 0.08;
+const controls = new FirstPersonControls(camera, renderer.domElement);
+controls.movementSpeed = 8;
+controls.lookSpeed = 0.08;
 // orbit.update();
 
 //LIGHTING VARIABLES
@@ -148,7 +152,7 @@ const particles = new THREE.Points(particleGeometry, particleMaterial);
 scene.add(ambientLight, directionalLight, directLight1, directLight2, particles);
 
 //Add helpers
-scene.add(axesHelper, dLightHelper, dLightShadowHelper);
+// scene.add(axesHelper, dLightHelper, dLightShadowHelper);
 // scene.add( helper1, helper2 );
 
 //Load Model: Set scale and position
@@ -251,7 +255,7 @@ function handleMouseWheel(event) {
 function interpolation(){
   // const numPoints = 20;
     for (const pointSet of pointSets) {
-      const { startPoint, endPoint, steps = 20, interpolationType = 'linear' } = pointSet;
+      const { startPoint, endPoint, steps = 20, interpolationType, controlPoint1, controlPoint2 } = pointSet;
 
       if(interpolationType === 'linear'){
         for (let i = 1; i <= steps; i++) {
@@ -261,9 +265,53 @@ function interpolation(){
         }
       }
       else if(interpolationType === 'bezier'){
+        // Combine interpolated points for all sets
+          console.log('bezier')
+          const numPoints = 20;
+    
+          const curve = new THREE.CubicBezierCurve3(
+            startPoint,
+            controlPoint1,
+            controlPoint2,
+            endPoint
+          );
 
+          // startPoint: new THREE.Vector3(-18, 7.7, 49.86),
+          // endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
+          
+          const points = curve.getPoints( 50 );
+
+
+          interpolatedPoints.push(...points);
       }
     }
+    console.log('interpolatedFinal:', interpolatedPoints)
+}
+
+// Generate interpolated points for each set using Bezier interpolation
+function generateBezierInterpolationPoints(startPoint, endPoint, numPoints) {
+  // Define the control points for Bezier interpolation
+  const controlPoint1 = new THREE.Vector3(
+    startPoint.x + (endPoint.x - startPoint.x) / 3,
+    startPoint.y + (endPoint.y - startPoint.y) / 3,
+    startPoint.z + (endPoint.z - startPoint.z) / 3
+  );
+  const controlPoint2 = new THREE.Vector3(
+    startPoint.x + (endPoint.x - startPoint.x) * 2 / 3,
+    startPoint.y + (endPoint.y - startPoint.y) * 2 / 3,
+    startPoint.z + (endPoint.z - startPoint.z) * 2 / 3
+  );
+
+  console.log('INTER VALUES:', startPoint, controlPoint1, controlPoint2, endPoint)
+
+  // Create a cubic Bezier curve
+  const curve = new THREE.CubicBezierCurve3(startPoint, controlPoint1, controlPoint2, endPoint);
+
+  // Generate interpolated points along the curve
+  const interpolatedPoints = curve.getPoints(numPoints);
+  // console.log('interpolatedPoints:', interpolatedPoints)
+
+  return interpolatedPoints;
 }
 
 function plottingCubesToPath(){
@@ -274,6 +322,17 @@ function plottingCubesToPath(){
     cube.position.copy(point);
     scene.add(cube);
   });
+
+  //GUIDANCE POINTS
+  const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.05, 0.05);
+  const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
+
+  // startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
+  //   endPoint: new THREE.Vector3(-30, 7.4, 59.8),
+  
+  cube.position.copy(new THREE.Vector3(-30.8, 7.7, 55.2));
+  scene.add(cube);
 }
 
 function getRandomColor() {
@@ -288,23 +347,40 @@ function getRandomColor() {
 function handleCameraAngles(index, direction) {
   //CASES FOR CAMERA ANGLES
   const point = interpolatedPoints[index];
-  
+
   if(index >= 0 && index<= 25){
-    camera.lookAt(-11, 8, 49);
+    camera.lookAt(11, 8, 49);
+
   }else if(index >= 26 && index<= 60){
     camera.lookAt(-30, 8, 51);
-    // camera.lookAt(interpolatedPoints[currentIndex + 1]);
 
-    // camera.lookAt(-29, 8, 49);
+    // myCone.lookAt( s1.position ); 
+    // let q1 = new THREE.Quaternion().copy( myCone.quaternion );
+
+    // myCone.lookAt( s2.position );
+    // let q2 = new THREE.Quaternion().copy( myCone.quaternion );
+    
+
+    // Animate camera lookAt with easing using GSAP
+    // gsap.to(camera.position, {
+    //   lookAt: new THREE.Vector3(-30, 8, 51),
+    //   duration: 1, // Set the duration of the animation in seconds
+    //   ease: 'power2.out' // Set the easing function (optional)
+    // },8);
+    // camera.lookAt(-30, 8, 51);
+
+
   }else if(index >= 61 && index<= 90){
-    camera.lookAt(interpolatedPoints[currentIndex + 10]);
+    camera.lookAt(-30, 7.7, 55.2);
 
-      // camera.lookAt(interpolatedPoints[currentIndex + 1]);
-  }else if(index >= 81 && index<= 90){
-    camera.lookAt(interpolatedPoints[currentIndex + 1]);
+  }else if(index >= 81 && index <=120){
+    camera.lookAt(-30, 7.7, 60.2);
+    
   }
+  else if(index >= 121){
+    camera.lookAt(-25, 7.7, 70.2);
 
-  // if(index>= 26)
+  }
 }
 
 // Function to animate transition to the next point
@@ -370,6 +446,21 @@ function animateScene() {
 //ADDING STATS PERFORMANCE ANALYTICS
 document.body.appendChild(stats.dom);
 
+//GUI
+  // const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.1, 0.05);
+  // const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  // const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
+  // cube.position.copy(new THREE.Vector3(-25, 7.7, 70.2));
+  // scene.add(cube)
+
+const gui = new dat.GUI();
+
+const options = {
+  cubePosition: new THREE.Vector3(-29, 7.7, 70.2),
+}
+
+// gui.add(cube.position, 'x', -50 , 0)
+// gui.add(cube.position, 'z', -100 , 100)
 //EVENT LISTENERS
 raycast();
 window.addEventListener('wheel', handleMouseWheel);
