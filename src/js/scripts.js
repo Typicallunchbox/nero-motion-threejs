@@ -280,13 +280,7 @@ function interpolation(){
           // endPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
           
           const points = curve.getPoints( 50 );
-          const geometry = new THREE.BufferGeometry().setFromPoints( points );
-          
-          const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-          
-          // Create the final object to add to the scene
-          const curveObject = new THREE.Line( geometry, material );
-          scene.add(curveObject);
+
 
           interpolatedPoints.push(...points);
       }
