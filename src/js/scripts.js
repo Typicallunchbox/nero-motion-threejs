@@ -331,8 +331,8 @@ function plottingCubesToPath(){
   // startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
   //   endPoint: new THREE.Vector3(-30, 7.4, 59.8),
   
-  cube.position.copy(new THREE.Vector3(-30.8, 7.7, 55.2));
-  scene.add(cube);
+  // cube.position.copy(new THREE.Vector3(-30.8, 7.7, 55.2));
+  // scene.add(cube);
 }
 
 function getRandomColor() {
