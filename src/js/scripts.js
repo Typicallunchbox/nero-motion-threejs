@@ -55,7 +55,7 @@ const pointSets = [
   },
   {
     startPoint: new THREE.Vector3(-30, 7.7, 55.2),
-    endPoint: new THREE.Vector3(-30, 7.4, 59.8),
+    endPoint: new THREE.Vector3(-30, 7.7, 59.8),
     interpolationType: 'linear'
   },
   // Add more sets as needed
@@ -359,7 +359,7 @@ function handleCameraAngles(index) {
       z: 51,
       duration: 1,
     });
-  }else if(index >= 61 && index<= 100){
+  }else if(index >= 61 && index<= 110){
     gsap.to(hiddenCube.position, {
       x: interpolatedPoints[currentIndex + 10].x,
       y: interpolatedPoints[currentIndex + 10].y,
@@ -367,26 +367,27 @@ function handleCameraAngles(index) {
       duration: 1,
     });
 
-  }else if(index >= 101 && index <=120){
-    gsap.to(hiddenCube.position, {
-      x: -30,
-      y: 7.7,
-      z: 60.2,
-      duration: 2.5,
-    })
   }
-  else if(index >= 121 && index <=127){
+  // else if(index >= 101 && index <=120){
+  //   gsap.to(hiddenCube.position, {
+  //     x: -30,
+  //     y: 7.7,
+  //     z: 60.2,
+  //     duration: 2.5,
+  //   })
+  // }
+  else if(index >= 111 && index <=127){
     gsap.to(hiddenCube.position, {
       x: -29.5,
-      y: 7.7,
+      y: 8,
       z: 70,
-      duration: 1,
+      duration: 2,
     })
   }
   else if(index >= 128){
     gsap.to(hiddenCube.position, {
       x: -25,
-      y: 7.7,
+      y: 8,
       z: 70.2,
       duration: 2,
     })
