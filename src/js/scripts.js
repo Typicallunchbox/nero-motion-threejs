@@ -322,17 +322,6 @@ function plottingCubesToPath(){
     cube.position.copy(point);
     scene.add(cube);
   });
-
-  //GUIDANCE POINTS
-  const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-  const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
-
-  // startPoint: new THREE.Vector3(-30.8, 7.7, 55.2),
-  //   endPoint: new THREE.Vector3(-30, 7.4, 59.8),
-  
-  cube.position.copy(new THREE.Vector3(-30.8, 7.7, 55.2));
-  scene.add(cube);
 }
 
 function getRandomColor() {
@@ -361,7 +350,7 @@ function handleCameraAngles(index) {
       x: -12,
       y: 8,
       z: 50,
-      duration: 1,
+      duration: 2,
     });
   }else if(index >= 29 && index<= 60){
     gsap.to(hiddenCube.position, {
@@ -370,7 +359,7 @@ function handleCameraAngles(index) {
       z: 51,
       duration: 1,
     });
-  }else if(index >= 61 && index<= 90){
+  }else if(index >= 61 && index<= 100){
     gsap.to(hiddenCube.position, {
       x: interpolatedPoints[currentIndex + 10].x,
       y: interpolatedPoints[currentIndex + 10].y,
@@ -378,7 +367,7 @@ function handleCameraAngles(index) {
       duration: 1,
     });
 
-  }else if(index >= 81 && index <=120){
+  }else if(index >= 101 && index <=120){
     gsap.to(hiddenCube.position, {
       x: -30,
       y: 7.7,
