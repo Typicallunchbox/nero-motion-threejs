@@ -346,65 +346,59 @@ function getRandomColor() {
 
 function handleCameraAngles(index, direction) {
   //CASES FOR CAMERA ANGLES
-  const point = interpolatedPoints[index];
 
-  if(index >= 0 && index<= 25){
-    // camera.lookAt(11, 8, 49);
+  if(index >= 0 && index<= 20){
     gsap.to(hiddenCube.position, {
       x: 11,
       y: 8,
       z: 49,
       duration: 2,
-      // ease: ''
     });
 
-  }else if(index >= 26 && index<= 60){
-    // camera.lookAt(-30, 8, 51);
+  }else if(index >= 21 && index<= 28){
+    gsap.to(hiddenCube.position, {
+      x: -12,
+      y: 8,
+      z: 50,
+      duration: 1,
+    });
+  }else if(index >= 29 && index<= 60){
     gsap.to(hiddenCube.position, {
       x: -30,
       y: 8,
       z: 51,
       duration: 1,
-      // ease: ''
     });
   }else if(index >= 61 && index<= 90){
-    // camera.lookAt(-30, 7.7, 55.2);
     gsap.to(hiddenCube.position, {
-      x: -30,
-      y: 7.7,
-      z: 55.2,
+      x: interpolatedPoints[currentIndex + 10].x,
+      y: interpolatedPoints[currentIndex + 10].y,
+      z: interpolatedPoints[currentIndex + 10].z,
       duration: 1,
-      // ease: ''
     });
 
   }else if(index >= 81 && index <=120){
-    // camera.lookAt(-30, 7.7, 60.2);
     gsap.to(hiddenCube.position, {
       x: -30,
       y: 7.7,
       z: 60.2,
-      duration: 2,
-      // ease: ''
+      duration: 3,
     })
   }
   else if(index >= 121 && index <=127){
-    // camera.lookAt(-30, 7.7, 60.2);
     gsap.to(hiddenCube.position, {
       x: -29.5,
       y: 7.7,
       z: 70,
       duration: 2,
-      // ease: ''
     })
   }
   else if(index >= 128){
-    // camera.lookAt(-25, 7.7, 70.2);
     gsap.to(hiddenCube.position, {
       x: -25,
       y: 7.7,
       z: 70.2,
       duration: 2,
-      // ease: ''
     })
   }
 }
