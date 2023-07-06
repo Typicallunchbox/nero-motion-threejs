@@ -354,7 +354,7 @@ function handleCameraAngles(index, direction) {
       x: 11,
       y: 8,
       z: 49,
-      duration: 1,
+      duration: 2,
       // ease: ''
     });
 
@@ -367,34 +367,45 @@ function handleCameraAngles(index, direction) {
       duration: 1,
       // ease: ''
     });
-    
-
-    // myCone.lookAt( s1.position ); 
-    // let q1 = new THREE.Quaternion().copy( myCone.quaternion );
-
-    // myCone.lookAt( s2.position );
-    // let q2 = new THREE.Quaternion().copy( myCone.quaternion );
-    
-
-    // Animate camera lookAt with easing using GSAP
-    // gsap.to(camera.position, {
-    //   lookAt: new THREE.Vector3(-30, 8, 51),
-    //   duration: 1, // Set the duration of the animation in seconds
-    //   ease: 'power2.out' // Set the easing function (optional)
-    // },8);
-    // camera.lookAt(-30, 8, 51);
-
-
   }else if(index >= 61 && index<= 90){
-    camera.lookAt(-30, 7.7, 55.2);
+    // camera.lookAt(-30, 7.7, 55.2);
+    gsap.to(hiddenCube.position, {
+      x: -30,
+      y: 7.7,
+      z: 55.2,
+      duration: 1,
+      // ease: ''
+    });
 
   }else if(index >= 81 && index <=120){
-    camera.lookAt(-30, 7.7, 60.2);
-    
+    // camera.lookAt(-30, 7.7, 60.2);
+    gsap.to(hiddenCube.position, {
+      x: -30,
+      y: 7.7,
+      z: 60.2,
+      duration: 2,
+      // ease: ''
+    })
   }
-  else if(index >= 121){
-    camera.lookAt(-25, 7.7, 70.2);
-
+  else if(index >= 121 && index <=127){
+    // camera.lookAt(-30, 7.7, 60.2);
+    gsap.to(hiddenCube.position, {
+      x: -29.5,
+      y: 7.7,
+      z: 70,
+      duration: 2,
+      // ease: ''
+    })
+  }
+  else if(index >= 128){
+    // camera.lookAt(-25, 7.7, 70.2);
+    gsap.to(hiddenCube.position, {
+      x: -25,
+      y: 7.7,
+      z: 70.2,
+      duration: 2,
+      // ease: ''
+    })
   }
 }
 
@@ -464,11 +475,11 @@ function animateScene() {
 document.body.appendChild(stats.dom);
 
 //GUI
-  // const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.1, 0.05);
-  // const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  // const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
-  // cube.position.copy(new THREE.Vector3(-25, 7.7, 70.2));
-  // scene.add(cube)
+  const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.1, 0.05);
+  const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
+  cube.position.copy(new THREE.Vector3(-25, 7.7, 70.2));
+  scene.add(cube)
 
 const gui = new dat.GUI();
 
@@ -476,8 +487,8 @@ const options = {
   cubePosition: new THREE.Vector3(-29, 7.7, 70.2),
 }
 
-// gui.add(cube.position, 'x', -50 , 0)
-// gui.add(cube.position, 'z', -100 , 100)
+gui.add(cube.position, 'x', -50 , 0)
+gui.add(cube.position, 'z', -100 , 100)
 //EVENT LISTENERS
 raycast();
 window.addEventListener('wheel', handleMouseWheel);
