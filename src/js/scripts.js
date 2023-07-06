@@ -344,7 +344,8 @@ function getRandomColor() {
   return color;
 }
 
-function handleCameraAngles(index, direction) {
+
+function handleCameraAngles(index) {
   //CASES FOR CAMERA ANGLES
 
   if(index >= 0 && index<= 20){
@@ -382,7 +383,7 @@ function handleCameraAngles(index, direction) {
       x: -30,
       y: 7.7,
       z: 60.2,
-      duration: 3,
+      duration: 2.5,
     })
   }
   else if(index >= 121 && index <=127){
@@ -469,11 +470,11 @@ function animateScene() {
 document.body.appendChild(stats.dom);
 
 //GUI
-  const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.1, 0.05);
-  const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-  const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
-  cube.position.copy(new THREE.Vector3(-25, 7.7, 70.2));
-  scene.add(cube)
+  // const cubeGeometry2 = new THREE.BoxGeometry(0.05, 0.1, 0.05);
+  // const cubeMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+  // const cube = new THREE.Mesh(cubeGeometry2, cubeMaterial2);
+  // cube.position.copy(new THREE.Vector3(-25, 7.7, 70.2));
+  // scene.add(cube)
 
 const gui = new dat.GUI();
 
@@ -481,8 +482,8 @@ const options = {
   cubePosition: new THREE.Vector3(-29, 7.7, 70.2),
 }
 
-gui.add(cube.position, 'x', -50 , 0)
-gui.add(cube.position, 'z', -100 , 100)
+// gui.add(cube.position, 'x', -50 , 0)
+// gui.add(cube.position, 'z', -100 , 100)
 //EVENT LISTENERS
 raycast();
 window.addEventListener('wheel', handleMouseWheel);
@@ -492,7 +493,7 @@ window.addEventListener('resize', onWindowResize, false);
 
 //HIDDEN CUBE LOGIC
 const hiddenCubeGeometry = new THREE.BoxGeometry(0.10, 1, 0.10);
-const hiddenCubeMaterial = new THREE.MeshBasicMaterial({ color: 0x4c22d4 });
+const hiddenCubeMaterial = new THREE.MeshBasicMaterial({ visible: false });
 const hiddenCube = new THREE.Mesh(hiddenCubeGeometry, hiddenCubeMaterial);
 scene.add(hiddenCube);
 hiddenCube.position.set(11, 8, 49);
