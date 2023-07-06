@@ -71,7 +71,7 @@ gsap.registerPlugin(MotionPathPlugin);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 camera.position.set(235, 162, 370);
-camera.lookAt(11, 8, 49);
+// camera.lookAt(11, 8, 49);
 
 
 //DEBUGGING CAMERA FREE MOVEMENT VARIABLES
@@ -349,10 +349,25 @@ function handleCameraAngles(index, direction) {
   const point = interpolatedPoints[index];
 
   if(index >= 0 && index<= 25){
-    camera.lookAt(11, 8, 49);
+    // camera.lookAt(11, 8, 49);
+    gsap.to(hiddenCube.position, {
+      x: 11,
+      y: 8,
+      z: 49,
+      duration: 1,
+      // ease: ''
+    });
 
   }else if(index >= 26 && index<= 60){
-    camera.lookAt(-30, 8, 51);
+    // camera.lookAt(-30, 8, 51);
+    gsap.to(hiddenCube.position, {
+      x: -30,
+      y: 8,
+      z: 51,
+      duration: 1,
+      // ease: ''
+    });
+    
 
     // myCone.lookAt( s1.position ); 
     // let q1 = new THREE.Quaternion().copy( myCone.quaternion );
@@ -435,6 +450,8 @@ function animateCameraBackward() {
 
 // Animate the scene
 function animateScene() {
+  camera.lookAt( hiddenCube.position );
+
   requestAnimationFrame(animateScene);
   renderer.render(scene, camera);
   stats.update();
@@ -467,6 +484,13 @@ window.addEventListener('wheel', handleMouseWheel);
 window.addEventListener('touchstart', touchStart, false);
 window.addEventListener('touchmove', touchMove, false);
 window.addEventListener('resize', onWindowResize, false);
+
+//HIDDEN CUBE LOGIC
+const hiddenCubeGeometry = new THREE.BoxGeometry(0.10, 1, 0.10);
+const hiddenCubeMaterial = new THREE.MeshBasicMaterial({ color: 0x4c22d4 });
+const hiddenCube = new THREE.Mesh(hiddenCubeGeometry, hiddenCubeMaterial);
+scene.add(hiddenCube);
+hiddenCube.position.set(11, 8, 49);
 
 interpolation();
 plottingCubesToPath();
