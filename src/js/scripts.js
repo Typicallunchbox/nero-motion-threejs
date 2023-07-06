@@ -71,7 +71,7 @@ gsap.registerPlugin(MotionPathPlugin);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 camera.position.set(235, 162, 370);
-camera.lookAt(11, 8, 49);
+// camera.lookAt(11, 8, 49);
 
 
 //DEBUGGING CAMERA FREE MOVEMENT VARIABLES
@@ -344,42 +344,63 @@ function getRandomColor() {
   return color;
 }
 
-function handleCameraAngles(index, direction) {
+
+function handleCameraAngles(index) {
   //CASES FOR CAMERA ANGLES
-  const point = interpolatedPoints[index];
 
-  if(index >= 0 && index<= 25){
-    camera.lookAt(11, 8, 49);
+  if(index >= 0 && index<= 20){
+    gsap.to(hiddenCube.position, {
+      x: 11,
+      y: 8,
+      z: 49,
+      duration: 2,
+    });
 
-  }else if(index >= 26 && index<= 60){
-    camera.lookAt(-30, 8, 51);
-
-    // myCone.lookAt( s1.position ); 
-    // let q1 = new THREE.Quaternion().copy( myCone.quaternion );
-
-    // myCone.lookAt( s2.position );
-    // let q2 = new THREE.Quaternion().copy( myCone.quaternion );
-    
-
-    // Animate camera lookAt with easing using GSAP
-    // gsap.to(camera.position, {
-    //   lookAt: new THREE.Vector3(-30, 8, 51),
-    //   duration: 1, // Set the duration of the animation in seconds
-    //   ease: 'power2.out' // Set the easing function (optional)
-    // },8);
-    // camera.lookAt(-30, 8, 51);
-
-
+  }else if(index >= 21 && index<= 28){
+    gsap.to(hiddenCube.position, {
+      x: -12,
+      y: 8,
+      z: 50,
+      duration: 1,
+    });
+  }else if(index >= 29 && index<= 60){
+    gsap.to(hiddenCube.position, {
+      x: -30,
+      y: 8,
+      z: 51,
+      duration: 1,
+    });
   }else if(index >= 61 && index<= 90){
-    camera.lookAt(-30, 7.7, 55.2);
+    gsap.to(hiddenCube.position, {
+      x: interpolatedPoints[currentIndex + 10].x,
+      y: interpolatedPoints[currentIndex + 10].y,
+      z: interpolatedPoints[currentIndex + 10].z,
+      duration: 1,
+    });
 
   }else if(index >= 81 && index <=120){
-    camera.lookAt(-30, 7.7, 60.2);
-    
+    gsap.to(hiddenCube.position, {
+      x: -30,
+      y: 7.7,
+      z: 60.2,
+      duration: 2.5,
+    })
   }
-  else if(index >= 121){
-    camera.lookAt(-25, 7.7, 70.2);
-
+  else if(index >= 121 && index <=127){
+    gsap.to(hiddenCube.position, {
+      x: -29.5,
+      y: 7.7,
+      z: 70,
+      duration: 2,
+    })
+  }
+  else if(index >= 128){
+    gsap.to(hiddenCube.position, {
+      x: -25,
+      y: 7.7,
+      z: 70.2,
+      duration: 2,
+    })
   }
 }
 
@@ -435,6 +456,8 @@ function animateCameraBackward() {
 
 // Animate the scene
 function animateScene() {
+  camera.lookAt( hiddenCube.position );
+
   requestAnimationFrame(animateScene);
   renderer.render(scene, camera);
   stats.update();
@@ -467,6 +490,13 @@ window.addEventListener('wheel', handleMouseWheel);
 window.addEventListener('touchstart', touchStart, false);
 window.addEventListener('touchmove', touchMove, false);
 window.addEventListener('resize', onWindowResize, false);
+
+//HIDDEN CUBE LOGIC
+const hiddenCubeGeometry = new THREE.BoxGeometry(0.10, 1, 0.10);
+const hiddenCubeMaterial = new THREE.MeshBasicMaterial({ visible: false });
+const hiddenCube = new THREE.Mesh(hiddenCubeGeometry, hiddenCubeMaterial);
+scene.add(hiddenCube);
+hiddenCube.position.set(11, 8, 49);
 
 interpolation();
 plottingCubesToPath();
