@@ -380,7 +380,7 @@ function handleCameraAngles(index) {
       x: -29.5,
       y: 7.7,
       z: 70,
-      duration: 2,
+      duration: 1,
     })
   }
   else if(index >= 128){
